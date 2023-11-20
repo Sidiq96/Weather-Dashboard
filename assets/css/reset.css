@@ -1,0 +1,26 @@
+/* Add your global styles here, if needed */
+
+.container-fluid {
+    padding: 0;
+  }
+  
+  .weather-header {
+    font-size: 24px;
+  }
+  
+  #search-input {
+    width: 10%;
+  }
+  
+  .weather-search {
+    width: 100%;
+  }
+  
+  #history {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  
+  /* Add more styles as needed */
+  
+  
