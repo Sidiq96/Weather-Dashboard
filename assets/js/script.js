@@ -30,7 +30,8 @@ $(document).ready(function () {
       },
     });
   }
-
+  // this hides the box in beginning before the search
+  $(today).css("display", "none");
   function updateTodaySection(weatherData) {
     // Update the 'today' section with the relevant weather information
     var todaySection = $("#today");
@@ -38,8 +39,8 @@ $(document).ready(function () {
     var currentDate = dayjs().format("DD/MM/YYYY");
     // Construct the icon URL based on the weather condition code
     var weatherIconUrl = getWeatherIconUrl(weatherData.weather[0].icon);
-     // Convert wind speed from m/s to kph
-     var windSpeedKph = (weatherData.wind.speed * 3.6).toFixed(2);
+    // Convert wind speed from m/s to kph
+    var windSpeedKph = (weatherData.wind.speed * 3.6).toFixed(2);
 
     todaySection.html(`
           <h2>${weatherData.name} (${currentDate}) <img src="${weatherIconUrl}" alt="Weather Icon" class="weather-icon" /> </h2>
@@ -48,12 +49,23 @@ $(document).ready(function () {
           <p>Wind: ${windSpeedKph} KPH</p>
           <p>Humidity: ${weatherData.main.humidity}%</p>
         `);
+    // shows the box after the results appear
+    $(today).css("display", "block");
   }
+  
   // Function to get the URL of the weather icon based on weather condition
   function getWeatherIconUrl(iconCode) {
     // Adjust the URL format based on OpenWeatherMap's icon URLs
     return `https://openweathermap.org/img/w/${iconCode}.png`;
   }
+
+  // some basic styling for the forecast box
+  $("#today").css({
+    border: "10px solid #ccc",
+    padding: "10px",
+    border: "5px",
+    boxShadow: "0 0 10px rgba(0,0,0,1)",
+  });
 
   // Function to update the search history
   function updateSearchHistory(cityName) {
