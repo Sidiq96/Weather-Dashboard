@@ -1,4 +1,10 @@
 $(document).ready(function () {
+  // Load search history from local storage on page load
+  var searchHistory = JSON.parse(localStorage.getItem("searchHistory")) || [];
+
+  // Display the initial search history
+  displaySearchHistory();
+
   // Event listener for the form submission
   $("#search-form").submit(function (event) {
     event.preventDefault();
@@ -15,6 +21,9 @@ $(document).ready(function () {
 
     // Update the search history
     updateSearchHistory(cityName);
+
+    // Save search history to local storage
+    localStorage.setItem("searchHistory", JSON.stringify(searchHistory));
   });
 
   // Function to fetch the weather data from the API
@@ -31,6 +40,7 @@ $(document).ready(function () {
       },
     });
   }
+
   function getForecastData(cityName) {
     var forecastApiUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${apiKey}&units=metric`;
 
@@ -44,8 +54,10 @@ $(document).ready(function () {
       },
     });
   }
-  // this hides the box in beginning before the search
+
+  // this hides the box in the beginning before the search
   $(today).css("display", "none");
+
   function updateTodaySection(weatherData) {
     // Update the 'today' section with the relevant weather information
     var todaySection = $("#today");
@@ -57,32 +69,34 @@ $(document).ready(function () {
     var windSpeedKph = (weatherData.wind.speed * 3.6).toFixed(2);
 
     todaySection.html(`
-          <h2>${weatherData.name} (${currentDate}) <img src="${weatherIconUrl}" alt="Weather Icon" class="weather-icon" /> </h2>
-          <p>Temperature: ${weatherData.main.temp} °C</p>
-          <p>Weather: ${weatherData.weather[0].description}</p>
-          <p>Wind: ${windSpeedKph} KPH</p>
-          <p>Humidity: ${weatherData.main.humidity}%</p>
-        `);
+      <h2>${weatherData.name} (${currentDate}) <img src="${weatherIconUrl}" alt="Weather Icon" class="weather-icon" /> </h2>
+      <p>Temperature: ${weatherData.main.temp} °C</p>
+      <p>Weather: ${weatherData.weather[0].description}</p>
+      <p>Wind: ${windSpeedKph} KPH</p>
+      <p>Humidity: ${weatherData.main.humidity}%</p>
+    `);
     // shows the box after the results appear
     $(today).css("display", "block");
   }
+
   // some basic styling for the today box
   $("#today").css({
     border: "10px solid #ccc",
     padding: "10px",
-    border: "5px",
     boxShadow: "0 0 10px rgba(0,0,0,1)",
-    marginBottom:"5px"
+    marginBottom: "5px",
   });
+
   function updateForecastCards(forecastDataList) {
     // Select the container where forecast cards will be appended
-    const forecastHeading =$('#forecast-heading');
+    const forecastHeading = $("#forecast-heading");
     const forecastContainer = $("#forecast-container");
-    
+
     // Clear existing forecast cards content
     forecastContainer.empty();
     forecastHeading.empty();
-    forecastHeading.append('<h3>5-Day Forecast:</h3>');
+    forecastHeading.append("<h3>5-Day Forecast:</h3>");
+
     // Check if forecastDataList is an array
     if (Array.isArray(forecastDataList)) {
       // Use a Set to store unique dates
@@ -90,7 +104,7 @@ $(document).ready(function () {
 
       // Get the current date using Day.js
       const currentDate = dayjs().format("DD/MM/YYYY");
-      
+
       // Loop through the forecast data list
       forecastDataList.forEach((forecastData) => {
         // Get the date using Day.js
@@ -108,6 +122,7 @@ $(document).ready(function () {
 
           // Convert wind speed from m/s to kph
           const windSpeedKph = (forecastData.wind.speed * 3.6).toFixed(2);
+
           // Append a new forecast card to the container
           forecastContainer.append(`
             <div class="weather-card card m-2 p-3">
@@ -124,6 +139,7 @@ $(document).ready(function () {
       });
     }
   }
+
   // Function to get the URL of the weather icon based on weather condition
   function getWeatherIconUrl(iconCode) {
     // Adjust the URL format based on OpenWeatherMap's icon URLs
@@ -132,18 +148,37 @@ $(document).ready(function () {
 
   // Function to update the search history
   function updateSearchHistory(cityName) {
-    // Create a list item element with the city name
-    var listItem = $("<a>")
-      .addClass("list-group-item list-group-item-action")
-      .text(cityName);
+    // Add the city name to the search history array
+    searchHistory.unshift(cityName);
 
-    // Add a click event listener to the list item for re-searching
-    listItem.click(function () {
-      getWeatherData(cityName);
-      getForecastData(cityName);
+    // Display the updated search history
+    displaySearchHistory();
+  }
+
+  // Function to display search history
+  function displaySearchHistory() {
+    // Select the search history container
+    const historyContainer = $("#history");
+
+    // Clear existing search history content
+    historyContainer.empty();
+
+    // Loop through the search history array
+    searchHistory.forEach((cityName) => {
+      // Create a list item element with the city name
+      var listItem = $("<a>")
+        .addClass("list-group-item list-group-item-action")
+        .text(cityName);
+
+      // Add a click event listener to the list item for re-searching
+      listItem.click(function () {
+        getWeatherData(cityName);
+        getForecastData(cityName);
+      });
+
+      // Add the list item to the search history container
+      historyContainer.append(listItem);
     });
-
-    // Add the list item to the 'history' list
-    $("#history").prepend(listItem);
   }
 });
+
