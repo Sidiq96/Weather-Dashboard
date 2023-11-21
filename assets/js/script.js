@@ -1,4 +1,5 @@
 $(document).ready(function () {
+  var apiKey = "007f7afc11021432ad33849f0b7e48aa";
   // Load search history from local storage on page load
   var searchHistory = JSON.parse(localStorage.getItem("searchHistory")) || [];
 
